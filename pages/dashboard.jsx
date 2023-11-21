@@ -38,17 +38,17 @@ export default function Dashboard(props) {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to a <a href="https://nextjs.org">Next.js!</a> Dashboard Page!
+          Welcome to Your Lists!
         </h1>
 
-        <p className={styles.description}>
+        {/* <p className={styles.description}>
           Current Location: <code className={styles.code}>{router.asPath}</code>
           <br />
           Status:{" "}
           <code className={styles.code}>
             {!props.isLoggedIn && " Not"} Logged In
           </code>
-        </p>
+        </p> */}
 
         <p className={styles.description}>
           This page is only visible if you are logged in.
@@ -57,7 +57,7 @@ export default function Dashboard(props) {
         <div className={styles.grid}>
           <Link href="/" className={styles.card}>
             <h2>Home &rarr;</h2>
-            <p>Return to the homepage.</p>
+            <p>Search for movies.</p>
           </Link>
           <div
             onClick={logout}
@@ -65,7 +65,7 @@ export default function Dashboard(props) {
             className={styles.card}
           >
             <h2>Logout &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
+            <p>Click here to log out!</p>
           </div>
         </div>
       </main>

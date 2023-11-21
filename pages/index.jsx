@@ -7,6 +7,8 @@ import sessionOptions from "../config/session";
 import styles from "../styles/Home.module.css";
 import Header from "../components/header";
 import useLogout from "../hooks/useLogout";
+import { useState } from "react";
+import addFavorite from "../hooks/addFavorite";
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps({ req }) {
@@ -18,14 +20,42 @@ export const getServerSideProps = withIronSessionSsr(
     } else {
       props.isLoggedIn = false;
     }
-    return { props };
+    return {props}
   },
   sessionOptions
 );
 
+export function Search() {
+  const [search, setSearch] = useState()
+  const [movie, setMovie] = useState("")
+  // make API call when component loads
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const response = await fetch(`http://www.omdbapi.com/?t=${movie}&apikey=f7155445 `)
+    const data = await response.json()
+    setSearch(data)
+  }
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <input type="text" value={movie} onChange={e => setMovie(e.target.value)} />
+        <button type="submit">Submit</button>
+      </form>
+      {
+        search && <>
+          <h2>{search.Title}</h2>
+          <h3> {search.Year}</h3>
+          <p> {search.Rated}</p>
+          <p> {search.Plot}</p>
+        </>
+      }
+    </>
+  )
+}
 export default function Home(props) {
   const router = useRouter();
   const logout = useLogout();
+  const addToFavorites = addFavorite()
   return (
     <div className={styles.container}>
       <Head>
@@ -38,18 +68,10 @@ export default function Home(props) {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+         {!props.isLoggedIn && "Log in to"} Search a Movie!
         </h1>
-
-        <p className={styles.description}>
-          Current Location: <code className={styles.code}>{router.asPath}</code>
-          <br />
-          Status:{" "}
-          <code className={styles.code}>
-            {!props.isLoggedIn && " Not"} Logged In
-          </code>
-        </p>
-
+        <Search></Search>
+        <Link href="/dashboard" onClick={addToFavorites}>Favorites</Link>
         <div className={styles.grid}>
           {props.isLoggedIn ? (
             <>
