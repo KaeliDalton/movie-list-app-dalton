@@ -47,6 +47,7 @@ export function Search() {
           <h3> {search.Year}</h3>
           <p> {search.Rated}</p>
           <p> {search.Plot}</p>
+          <img src={search.Poster}/>
         </>
       }
     </>

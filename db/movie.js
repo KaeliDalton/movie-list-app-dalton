@@ -1,0 +1,2 @@
+//Want to use this for functions to get list of movies attached to user ID, function to add movie to list of movies attached to ID, and removie movie from list attached to ID
+//Maybe use for uodating the favorite/watched status, not sure if this is where to place the filtering for each or not

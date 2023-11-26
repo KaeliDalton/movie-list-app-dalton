@@ -1,12 +1,24 @@
-export default function(){
-    //I want to take the movie info and then store it in my database
-  return async function handleFavorites() {
-    try {
-      const res = await fetch('/movies/id', {method: 'POST'})
+import { useRouter } from "next/router"
+export default function useList(){
+  const router = useRouter()
+     async function addToList(movie){ 
+      const res = await fetch('/api/movie', {
+        method: 'POST', 
+        body: JSON.stringify(movie)
+      })
       if (res.status === 200)
-        router.push('/dashboard')
-    } catch(err) {
-      console.log(err)
-    }
+        router.replace(router.asPath)
+      }
+
+    async function removeFromList(movie){
+      const res = await fetch('/api/movie', {
+        method: 'DELETE',
+        body: JSON.stringify(movie)
+      })
+      if (res.status === 200) 
+        router.replace(router.asPath)
+      }
+  return {
+    addToList, removeFromList
   }
 }
