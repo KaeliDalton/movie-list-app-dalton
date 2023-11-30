@@ -8,7 +8,7 @@ import styles from "../styles/Home.module.css";
 import Header from "../components/header";
 import useLogout from "../hooks/useLogout";
 import { useState } from "react";
-import addFavorite from "../hooks/addFavorite";
+import {addToList} from "../hooks/addFavorite"
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps({ req }) {
@@ -56,7 +56,6 @@ export function Search() {
 export default function Home(props) {
   const router = useRouter();
   const logout = useLogout();
-  const addToFavorites = addFavorite()
   return (
     <div className={styles.container}>
       <Head>
@@ -72,7 +71,11 @@ export default function Home(props) {
          {!props.isLoggedIn && "Log in to"} Search a Movie!
         </h1>
         <Search></Search>
-        <Link href="/dashboard" onClick={addToFavorites}>Favorites</Link>
+        <div>
+        <Link href="/dashboard" onClick={addToList}>Favorites</Link>
+        </div>
+
+
         <div className={styles.grid}>
           {props.isLoggedIn ? (
             <>

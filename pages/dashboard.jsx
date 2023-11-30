@@ -54,6 +54,20 @@ export default function Dashboard(props) {
           This page is only visible if you are logged in.
         </p>
 
+        <div>
+          <h2>My Movies</h2>
+          <ul>
+            <li>Display list here</li>
+          </ul>
+        </div>
+        <div>
+        <a>Link to my favorites</a>
+        <a>Link to watched</a>
+        <a>Link to unwatched</a>
+        </div>
+        <p>Have buttons to update watched/unwatched displayed along with movie info, radio buttons?</p>
+        <p>Have "add to favorites button", maybe a checkbox that updates it?</p>
+
         <div className={styles.grid}>
           <Link href="/" className={styles.card}>
             <h2>Home &rarr;</h2>

@@ -1,0 +1,5 @@
+export const SEARCH_FILMS = 'SEARCH_FILMS'
+export const ADD_MOVIE = 'ADD_MOVIE'
+export const REMOVE_MOVIE = 'REMOVE_MOVIE'
+// export const UPDATE_FAVORITE = 'UPDATE_FAVORITE'
+// export const UPDATE_WATCHED = 'UPDATE_WATCHED'
