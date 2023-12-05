@@ -2,7 +2,7 @@ import React, {useContext, createContext, useReducer} from "react"
 import initialState from "./state"
 import reducer from './reducer'
 
-export const movieContext = createContext()
+export const MovieContext = createContext()
 
 export const useMovieContext = () => {
     const context = useContext(movieContext)
@@ -11,7 +11,11 @@ export const useMovieContext = () => {
     return context
 }
 
-export const MovieProvider = (props) => {
+export const MovieProvider = ({children}) => {
     const [state, dispatch] = useReducer(reducer, initialState)
-    return (<movieContext.Provider value={[state, dispatch]} {...props} />)
+    return (<MovieContext.Provider value={[state, dispatch]}>{children}</MovieContext.Provider>)
 }
+
+
+
+

@@ -15,4 +15,3 @@ export default function MoviePreview({
         </div>
     )
 }
-//didn't exist on thurs

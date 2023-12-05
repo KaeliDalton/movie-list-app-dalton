@@ -1,4 +1,3 @@
-
 import db from '../../../db'
 
 
@@ -35,7 +34,7 @@ const addMovie = async(req, res)=>{
     const removeMovie = async(req, res) =>{
         const movie = await JSON.parse(req.body)
         try {
-            const removedMovie = await db.movie.remove(req.session.user.id, movie.id)
+            const removedMovie = await db.movie.remove(req.session.user.id, movie.title)
             if(removedMovie) {
                 res.status(200).json(movie)
             }else {
@@ -50,7 +49,7 @@ const addMovie = async(req, res)=>{
     const updateList = async(req, res) =>{
         const movie = await JSON.parse(req.body)
         try {
-            const updatedList = await db.movie.markWatched(req.session.user.id, movie.id)
+            const updatedList = await db.movie.markWatched(req.session.user.id, movie.title)
             if(updatedList === null) {
                 req.session.destroy()
                 return res.status(401).end()

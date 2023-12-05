@@ -55,7 +55,7 @@ export default function Signup(props) {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to the Movie List App Login Page!
+          Welcome to the Movie List App Sign Up Page!
         </h1>
 
         <p className={styles.description}>

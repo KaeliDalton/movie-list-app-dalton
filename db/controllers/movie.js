@@ -1,24 +1,23 @@
 import Movie from '../models/movie'
 import User from '../models/user'
-//Why won't dbConnect import???
-import {dbConnect, normalizeId} from './util'
+import {dbConnect, normalizeId} from './util/index'
 
 export async function getAll(userId){
     await dbConnect()
     const user = await User.findById(userId).lean()
     if (!user) return null
-    return user.myMovies.map(movie => normalizeId(movie))
+    return user.favoriteMovies.map(movie => normalizeId(movie))
 }
 
 export async function addMovie(userId, movie){
     await dbConnect()
-    const user = await user.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         userId,
-        {$addToSet: {myMovies: movie}},
+        {$addToSet: {favoriteMovies: movie}},
         {new: true}
     )
    if (!user) return null
-   const addedMovie = user.myMovies.find(mv => mv.imdbId === movie.imdbId)
+   const addedMovie = user.favoriteMovies.find(me => me.title === movie.title)
 return normalizeId(addedMovie)
 }
 
@@ -27,36 +26,36 @@ export async function markWatched(userId){
     await dbConnect()
     const user = await User.findByIdAndUpdate(
         userId,
-        {$set: {myMovies: {isWatched: true}}},
+        {$set: {favoriteMovies: {isWatched: true}}},
         {new: true}
     )
   if(!user) return null
-    return normalizeId(movie)
+    return true
 }
 
-export async function getUnWatched(userId){
+export async function getUnWatched(userId, isWatched){
     await dbConnect()
     const user = await User.findById(userId).lean()
     if (!user) return null
-    const movie = user.myMovies.find(movie => movie.isWatched === false)
+    const movie = user.favoriteMovies.find(me => me.isWatched === isWatched)
     if (movie) return normalizeId(movie)
     return null
 }
 
-export async function getWatched(userId){
+export async function getWatched(userId, isWatched){
     await dbConnect()
     const user = await User.findById(userId).lean()
     if (!user) return null
-    const movie = user.myMovies.find(movie => movie.isWatched === true)
+    const movie = user.favoriteMovies.find(me => me.isWatched === true)
     if (movie) return normalizeId(movie)
     return null
 }
 
-export async function remove(userId, movieId){
+export async function remove(userId, movieTitle){
   await dbConnect()
   const user = await User.findByIdAndUpdate(
     userId,
-    {$pull: {myMovies: {_id: movieId}}},
+    {$pull: {favoriteMovies: {title: movieTitle}}},
     {new: true}
   )
   if (!user) return null

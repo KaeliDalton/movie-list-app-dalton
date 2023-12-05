@@ -10,6 +10,8 @@ import useLogout from "../hooks/useLogout";
 import { useState } from "react";
 import MovieList from "../components/movieList";
 import * as actions from '../context/movie/actions'
+import { useMovieContext } from "../context/movie";
+import { useRef } from "react";
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps({ req }) {
@@ -32,16 +34,28 @@ export default function Search(props) {
   const [movie, setMovie] = useState("")
   const logout = useLogout()
   const router = useRouter
+  const [{movieSearchResults}, dispatch] = useMovieContext()
+  const [fetching, setFetching] = useState(false)
+  const [previousQuery, setPreviousQuery] = useState()
+  const inputRef = useRef()
+  const inputDivRef = useRef()
   async function handleSubmit(e) {
     e.preventDefault()
+    if (fetching || !movie.trim() || movie === previousQuery) return
+    setPreviousQuery(movie)
+    setFetching(true)
     const response = await fetch(`http://www.omdbapi.com/?t=${movie}&apikey=f7155445 `)
     const data = await response.json()
     setSearch(data)
-    // dispatch({
-    //   action: actions.SEARCH_FILMS,
-    //   payload: data
-    //   ?.items
-    // })
+    dispatch({
+      type: actions.SEARCH_FILMS,
+      payload: data
+        ?.map((movie) => ({
+          id: movie.title,
+          ...movie
+        }))
+    })
+    setFetching(false)
   }
   async function addToList(){
     const res = await fetch('/api/movie', {
@@ -72,11 +86,15 @@ export default function Search(props) {
           <input type="text" value={movie} onChange={e => setMovie(e.target.value)} />
           <button type="submit">Submit</button>
         </form>
-        {/* {
-          search
-          ? <MovieList movies={search}/>
-          : <p>No results found</p>
-        } */}
+        {
+         fetching
+         ? <Loading />
+         : movieSearchResults?.length
+         ? <MovieList movies={movieSearchResults} />
+         : <NoResults
+         {...{inputRef, inputDivRef, previousQuery}}
+         clearSearch={() => setMovie("")}/>
+        }
         {
           search && <>
             <h2>{search.Title}</h2>
@@ -138,4 +156,27 @@ export default function Search(props) {
       </footer>
     </div>
   );
+}
+
+function Loading() {
+  return <span className={styles.loading}>Still searching</span>
+}
+
+function NoResults({ inputDivRef, inputRef, previousQuery, clearSearch }) {
+  function handleLetsSearchClick() {
+    inputRef.current.focus()
+    if (previousQuery) clearSearch()
+  }
+  return (
+    <div className={styles.noResults}>
+      <p><strong>{previousQuery ? `No Movies found for "${previousQuery}"` : "Nothing to see yet"}</strong></p>
+      <button onClick={handleLetsSearchClick}>
+        {
+          previousQuery
+          ? `Search again?`
+          : `Let's find a movie!`
+        }
+      </button>
+    </div>
+  )
 }

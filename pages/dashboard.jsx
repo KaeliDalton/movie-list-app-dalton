@@ -29,7 +29,7 @@ export const getServerSideProps = withIronSessionSsr(
       props: {
         user: req.session.user,
         isLoggedIn: true,
-        myMovies: movies
+        favoriteMovies: movies
       } };
   },
   sessionOptions

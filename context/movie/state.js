@@ -1,6 +1,6 @@
 const initialState = {
     movieSearchResults: [],
-    myMovies: []
+    favoriteMovies: []
 }
 
 export default initialState

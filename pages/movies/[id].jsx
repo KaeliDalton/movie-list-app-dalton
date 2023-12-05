@@ -7,6 +7,7 @@ import sessionOptions from '../../config/session';
 import {useMovieContext} from '../../context/movie'
 import Header from '../../components/header'
 import db from '../../db'
+import * as actions from "../../context/movie/actions"
 
 export const getServerSideProps = withIronSessionSsr(
     async function getServerSideProps({req, params}){
@@ -28,20 +29,20 @@ export default function Movie(props){
     const router = useRouter()
     const movieId = router.query.id
     const {isLoggedIn} = props
-    const [{movieSearchResults}] = useMovieContext()
+    const [{movieSearchResults}, dispatch] = useMovieContext()
 
-    // let isFavoriteMovie = false
-    // let movie
-    // if (props.movie){
-    //     movie = props.movie
-    //     isFavoriteMovie = true
-    // } else
-    // movie = movieSearchResults.find(movie => movie.imdbId === movieId)
+    let isFavoriteMovie = false
+    let movie
+    if (props.movie){
+        movie = props.movie
+        isFavoriteMovie = true
+    } else
+    movie = movieSearchResults.find(movie => movie.id === movieId)
 
-    // useEffect(() => {
-    //     if (!props.movie && !movie)
-    //     router.push('/')
-    // }, [props.movie, movieSearchResults, movie, router])
+    useEffect(() => {
+        if (!props.movie && !movie)
+        router.push('/')
+    }, [props.movie, movieSearchResults, movie, router])
 
     async function addToList(){
         const res = await fetch('/api/movie', {
