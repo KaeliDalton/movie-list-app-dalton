@@ -1,18 +1,17 @@
-import { Schema, model, models } from 'mongoose'
+import { Schema } from 'mongoose'
 
-const MovieSchema = new Schema({
-  movie: {
-    title: String,
-    year: Number,
-    rated: String,
-    runtime: String,
-    director: String,
-    plot: String,
-    poster_link: String,
-    isFavorite: Boolean,
-    isWatched: Boolean,
-  },
+const movieSchema = new Schema({
+  imdbId: String,
+  title: String,
+  year: Number,
+  rated: String,
+  runtime: String,
+  director: String,
+  plot: String,
+  poster_link: String,
+  isWatched: Boolean,
+  // isWatched: {type: Boolean, default: false},
 })
 
 
-export default models.Movie || model('Movie', MovieSchema)
+export default movieSchema

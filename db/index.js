@@ -1,9 +1,11 @@
-import * as user from './user'
-import * as auth from './auth'
-import * as movie from './movie'
+import * as user from './controllers/user'
+import * as auth from './controllers/auth'
+import * as movie from './controllers/movie'
 
-export default {
+const obj = {
   user,
   auth,
   movie
 }
+
+export default obj
