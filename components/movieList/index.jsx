@@ -5,9 +5,9 @@ import MoviePreview from '../moviePreview'
 export default function MovieList({movies}){
     return (
         <div>
-            {movies && <Link key={movie.movieId} href={`/movie/${movie.movieId}`}>
+            {movies.map(movie => <Link key={movie.title} href={`/movie/${movie.title}`}>
                 <MoviePreview {...movie} />
-            </Link>}
+            </Link>)}
         </div>
     )
 }

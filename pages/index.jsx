@@ -12,69 +12,46 @@ import MovieList from "../components/movieList";
 import * as actions from '../context/movie/actions'
 import { useMovieContext } from "../context/movie";
 import { useRef } from "react";
-import {addtoFavorites} from '../hooks/useFavorites'
-
-export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps({ req }) {
-    const user = req.session.user;
-    const props = {};
-    console.log(req.session)
-    if (user) {
-      props.user = req.session.user;
-      props.isLoggedIn = true;
-    } else {
-      props.isLoggedIn = false;
-    }
-    return {props}
-  },
-  sessionOptions
-);
+import { getMovie } from "../util/movie";
 
 
-export default function Search(props) {
-  const [search, setSearch] = useState()
-  const [movie, setMovie] = useState("")
+export async function getServerSideProps({query}) {
+  const props = {}
+  if (query.q){
+    props.movie = await getMovie(query.q)
+  }
+  return { props }
+}
+
+
+export default function Search({movie}) {
+  // const [search, setSearch] = useState()
+  const [query, setQuery] = useState("")
   const logout = useLogout()
   const router = useRouter()
-  const [{movieSearchResults}, dispatch] = useMovieContext()
-  const [fetching, setFetching] = useState(false)
-  const [previousQuery, setPreviousQuery] = useState()
-  const inputRef = useRef()
-  const inputDivRef = useRef()
+  // const [{movieSearchResults}, dispatch] = useMovieContext()
+  // const [fetching, setFetching] = useState(false)
+  // const [previousQuery, setPreviousQuery] = useState()
+  // const inputRef = useRef()
+  // const inputDivRef = useRef()
   async function handleSubmit(e) {
     e.preventDefault()
-    if (fetching || !movie.trim() || movie === previousQuery) return
-    setPreviousQuery(movie)
-    setFetching(true)
-    const response = await fetch(`http://www.omdbapi.com/?t=${movie}&apikey=f7155445 `)
-    const data = await response.json()
-    setSearch(data)
-    console.log(data)
-    dispatch({
-      type: actions.SEARCH_FILMS,
-      payload:{ id: data.imdbId,
-        title: data.Title,
-        year: data.Year,
-        plot: data.Plot,
-        poster_link: data.Poster,
-        rated: data.Rated,
-        }
-    })
-    console.log(movieSearchResults)
-    setFetching(false)
+   if (!query.trim()) return
+   const queryString = `?q=${query}`
+    router.replace(`${router.pathname}${queryString}`)
   }
-  async function addToList(){
-    const {Title, Year, Rated, Director, Poster, Plot, imdbId} = search
-    const movieData = {id: imdbId, title: Title, rated: Rated, year: Year, director: Director, plot: Plot, poster_link: Poster}
-    console.log(JSON.stringify(movieData))
-    const res = await fetch(`/api/movie/${movieData.title}`, {
-        method: 'POST',
-        body: JSON.stringify(movieData),
-    })
-    if (res.status === 200){
-        router.replace(router.asPath)
-    }
-}
+//   async function addToList(){
+//     const {Title, Year, Rated, Director, Poster, Plot, imdbID} = search
+//     const movieData = {id: imdbID, title: Title, rated: Rated, year: Year, director: Director, plot: Plot, poster_link: Poster}
+//     console.log("Movie Data: ", movieData)
+//     const res = await fetch(`/api/movie/${movieData.title}`, {
+//         method: 'POST',
+//         body: JSON.stringify(movieData),
+//     })
+//     if (res.status === 200){
+//         router.replace(router.asPath)
+//     }
+// }
 
   return (
     <div className={styles.container}>
@@ -84,41 +61,35 @@ export default function Search(props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header isLoggedIn={props.isLoggedIn} username={props?.user?.username} />
+      {/* <Header isLoggedIn={props.isLoggedIn} username={props?.user?.username} /> */}
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
+        {/* <h1 className={styles.title}>
          {!props.isLoggedIn && "Log in to"} Search a Movie!
-        </h1>
+        </h1> */}
+        <h1>Search a Movie</h1>
         <>
         <form onSubmit={handleSubmit}>
-          <input type="text" value={movie} onChange={e => setMovie(e.target.value)} />
+          <input type="text" value={query} 
+          onChange={e => setQuery(e.target.value)} />
           <button type="submit">Submit</button>
         </form>
+        
         {
-         fetching
-         ? <Loading />
-         : movieSearchResults?.length
-         ? <MovieList movies={movieSearchResults} />
-         : <NoResults
-         {...{inputRef, inputDivRef, previousQuery}}
-         clearSearch={() => setMovie("")}/>
-       }
-        {
-          search && <>
-            <h2>{search.Title}</h2>
-            <h3> {search.Year}</h3>
-            <p> {search.Rated}</p>
-            <p> {search.Plot}</p>
-            <img src={search.Poster}/>
-            <button onClick={addToList}>Favorites</button>
-          </>
-        }
+      movie?.length
+        ? <section className={styles.results}>
+          {
+         movie.map((movie) =>(
+            <MoviePreview key={movie.Title} {...movie} />
+          ))}
+        </section>
+        : <p className={styles.noResults}>No Movies Found!</p>
+      }
       </>
         <div>
         </div>
 
-
+{/* 
         <div className={styles.grid}>
           {props.isLoggedIn ? (
             <>
@@ -148,7 +119,7 @@ export default function Search(props) {
               </Link>
             </>
           )}
-        </div>
+        </div> */}
       </main>
 
       <footer className={styles.footer}>
@@ -167,25 +138,12 @@ export default function Search(props) {
   );
 }
 
-function Loading() {
-  return <span className={styles.loading}>Still searching</span>
-}
 
-function NoResults({ inputDivRef, inputRef, previousQuery, clearSearch }) {
-  function handleLetsSearchClick() {
-    inputRef.current.focus()
-    if (previousQuery) clearSearch()
-  }
+function MoviePreview({ Title, Poster}) {
   return (
-    <div className={styles.noResults}>
-      <p><strong>{previousQuery ? `No Movies found for "${previousQuery}"` : "Nothing to see yet"}</strong></p>
-      <button onClick={handleLetsSearchClick}>
-        {
-          previousQuery
-          ? `Search again?`
-          : `Let's find a movie!`
-        }
-      </button>
-    </div>
+    <Link href={'/movies/' + Title} className={styles.preview}>
+      <Image src={Poster} width="312" height="231" alt={Title}/>
+      <span>{Title}</span>
+    </Link>
   )
 }

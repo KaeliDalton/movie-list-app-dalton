@@ -1,6 +1,6 @@
-import Movie from '../models/movie'
-import User from '../models/user'
-import {dbConnect, normalizeId} from './util/index'
+import Movie from './models/movie'
+import User from './models/user'
+import {dbConnect, normalizeId} from './controllers/util/index'
 
 export async function getAll(userId){
     await dbConnect()
@@ -11,14 +11,16 @@ export async function getAll(userId){
 
 export async function addMovie(userId, movie){
     await dbConnect()
+    console.log(userId)
     const user = await User.findByIdAndUpdate(
         userId,
         {$addToSet: {favoriteMovies: movie}},
         {new: true}
     )
    if (!user) return null
-   const addedMovie = user.favoriteMovies.find(me => me.title === movie.title)
-return normalizeId(addedMovie)
+//    const addedMovie = user.favoriteMovies.find(me => me.title === movie.title)
+console.log(user)
+return 200
 }
 
 
