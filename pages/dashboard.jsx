@@ -7,41 +7,34 @@ import { withIronSessionSsr } from "iron-session/next";
 import sessionOptions from "../config/session";
 import Header from "../components/header";
 import useLogout from "../hooks/useLogout";
-import MovieList from '../components/movieList'
-import db from '../db'
+import MovieList from "../components/movieList";
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps({ req }) {
     const user = req.session.user;
-    let movies
-    if (user)
-      movies = await db.movie.getAll(user.id)
-    if (!movies){
-      req.session.destroy()
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false
-        }
-      }
+    const props = {};
+    if (user) {
+      props.user = req.session.user;
+      props.isLoggedIn = true;
+    } else {
+      props.isLoggedIn = false;
     }
-    return { 
-      props: {
-        user: req.session.user,
-        isLoggedIn: true,
-        favoriteMovies: movies
-      } };
+    return { props };
   },
   sessionOptions
 );
 
 export default function Dashboard(props) {
-  const router = useRouter()
-  const logout = useLogout()
+  const router = useRouter();
+  const logout = useLogout();
+  // async function getMovieList(){
+  //   const movies = await db.movie.getAll(user.id)
+
+  // }
   return (
     <div className={styles.container}>
       <Head>
-        <title>MovieList My Movies</title>
+      <title>MovieList My Movies</title>
         <meta name="description" content="Your movies on MovieList" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -50,23 +43,27 @@ export default function Dashboard(props) {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to Your Lists!
+          Welcome to a Dashboard Page!
         </h1>
-        {props.myMovies.length > 0 ? <MovieList movies={props.myMovies}/> : <NoMovieText />}
+        <MovieList/>
 
-        <p>You can update the status of each movie on that movie's page!</p>
+        <p className={styles.description}>
+          Current Location: <code className={styles.code}>{router.asPath}</code>
+          <br />
+          Status:{" "}
+          <code className={styles.code}>
+            {!props.isLoggedIn && " Not"} Logged In
+          </code>
+        </p>
 
-        <div>
-        <Link href='/watched'>See Your Watched List</Link>
-        <a>Link to unwatched</a>
-        </div>
-        <p>Have buttons to update watched/unwatched displayed along with movie info, radio buttons?</p>
-        <p>Have "add to favorites button", maybe a checkbox that updates it?</p>
+        <p className={styles.description}>
+          This page is only visible if you are logged in.
+        </p>
 
         <div className={styles.grid}>
           <Link href="/" className={styles.card}>
             <h2>Home &rarr;</h2>
-            <p>Search for movies.</p>
+            <p>Return to the homepage.</p>
           </Link>
           <div
             onClick={logout}
@@ -74,7 +71,7 @@ export default function Dashboard(props) {
             className={styles.card}
           >
             <h2>Logout &rarr;</h2>
-            <p>Click here to log out!</p>
+            <p>Learn about Next.js in an interactive course with quizzes!</p>
           </div>
         </div>
       </main>
@@ -93,13 +90,4 @@ export default function Dashboard(props) {
       </footer>
     </div>
   );
-}
-
-function NoMovieText(){
-  return(
-    <div>
-      <p>You don't have any movies saved to My Movies.</p>
-      <p>Why don't you <Link href="/index">go home</Link> and add some?</p>
-    </div>
-  )
 }

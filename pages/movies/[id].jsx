@@ -41,7 +41,7 @@ export default function Movie(props){
 
     useEffect(() => {
         if (!props.movie && !movie)
-        router.push('/')
+        router.push('/dashboard')
     }, [props.movie, movieSearchResults, movie, router])
 
     async function addToList(){

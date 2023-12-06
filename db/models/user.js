@@ -14,7 +14,7 @@ const UserSchema = new Schema({
     minLength: 5,
     maxLength: 200
   },
-  myMovies: [movieSchema]
+  favoriteMovies: [movieSchema]
 })
 
 // hashes the password before it's stored in mongo

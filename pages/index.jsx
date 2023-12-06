@@ -12,11 +12,13 @@ import MovieList from "../components/movieList";
 import * as actions from '../context/movie/actions'
 import { useMovieContext } from "../context/movie";
 import { useRef } from "react";
+import {addtoFavorites} from '../hooks/useFavorites'
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps({ req }) {
     const user = req.session.user;
     const props = {};
+    console.log(req.session)
     if (user) {
       props.user = req.session.user;
       props.isLoggedIn = true;
@@ -33,7 +35,7 @@ export default function Search(props) {
   const [search, setSearch] = useState()
   const [movie, setMovie] = useState("")
   const logout = useLogout()
-  const router = useRouter
+  const router = useRouter()
   const [{movieSearchResults}, dispatch] = useMovieContext()
   const [fetching, setFetching] = useState(false)
   const [previousQuery, setPreviousQuery] = useState()
@@ -47,20 +49,27 @@ export default function Search(props) {
     const response = await fetch(`http://www.omdbapi.com/?t=${movie}&apikey=f7155445 `)
     const data = await response.json()
     setSearch(data)
+    console.log(data)
     dispatch({
       type: actions.SEARCH_FILMS,
-      payload: data
-        ?.map((movie) => ({
-          id: movie.title,
-          ...movie
-        }))
+      payload:{ id: data.imdbId,
+        title: data.Title,
+        year: data.Year,
+        plot: data.Plot,
+        poster_link: data.Poster,
+        rated: data.Rated,
+        }
     })
+    console.log(movieSearchResults)
     setFetching(false)
   }
   async function addToList(){
-    const res = await fetch('/api/movie', {
+    const {Title, Year, Rated, Director, Poster, Plot, imdbId} = search
+    const movieData = {id: imdbId, title: Title, rated: Rated, year: Year, director: Director, plot: Plot, poster_link: Poster}
+    console.log(JSON.stringify(movieData))
+    const res = await fetch(`/api/movie/${movieData.title}`, {
         method: 'POST',
-        body: JSON.stringify(search)
+        body: JSON.stringify(movieData),
     })
     if (res.status === 200){
         router.replace(router.asPath)
@@ -94,7 +103,7 @@ export default function Search(props) {
          : <NoResults
          {...{inputRef, inputDivRef, previousQuery}}
          clearSearch={() => setMovie("")}/>
-        }
+       }
         {
           search && <>
             <h2>{search.Title}</h2>
@@ -102,11 +111,11 @@ export default function Search(props) {
             <p> {search.Rated}</p>
             <p> {search.Plot}</p>
             <img src={search.Poster}/>
+            <button onClick={addToList}>Favorites</button>
           </>
         }
       </>
         <div>
-        <Link href="/dashboard" onClick={addToList}>Favorites</Link>
         </div>
 
 
