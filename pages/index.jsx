@@ -9,22 +9,22 @@ import Header from "../components/header";
 import useLogout from "../hooks/useLogout";
 
 
-// export const getServerSideProps = withIronSessionSsr(
-//   async function getServerSideProps({ req }) {
-//     const { user } = req.session;
-//     const props = {};
-//     if (user) {
-//       props.user = req.session.user;
-//     }
-//     props.isLoggedIn = !!user;
-//     return { props };
-//   },
-//   sessionOptions
-// );
+export const getServerSideProps = withIronSessionSsr(
+  async function getServerSideProps({ req }) {
+    const { user } = req.session;
+    const props = {};
+    if (user) {
+      props.user = req.session.user;
+    }
+    props.isLoggedIn = !!user;
+    return { props };
+  },
+  sessionOptions
+);
 
 
 export default function Home(props) {
-  // const logout = useLogout()
+  const logout = useLogout()
   const router = useRouter()
   return (
     <div className={styles.container}>
@@ -33,17 +33,16 @@ export default function Home(props) {
         <meta name="description" content="MovieList Search" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-{/* 
-      <Header isLoggedIn={props.isLoggedIn} username={props?.user?.username} /> */}
-      <Header/>
+
+      <Header isLoggedIn={props.isLoggedIn} username={props?.user?.username} />
 
       <main className={styles.main}>
         <h1 className={styles.title}>
          Welcome to MovieList!</h1>
         <h2>A site for film lovers to get information about their favorite movies</h2>
         <div className={styles.grid}>
-          {/* {props.isLoggedIn ? (
-            <> */}
+          {props.isLoggedIn ? (
+            <>
               <Link href="/search" className={styles.card}>
                 <h2>Basic Search &rarr;</h2>
                 <p>Search for movies</p>
@@ -56,16 +55,7 @@ export default function Home(props) {
                 <h2>Expanded Search &rarr;</h2>
                 <p>Receive all possible movie results</p>
               </Link>
-              <Link href="/login" className={styles.card}>
-                <h2>Login &rarr;</h2>
-                <p>Visit the login page.</p>
-              </Link>
-
-              <Link href="/signup" className={styles.card}>
-                <h2>Create Account &rarr;</h2>
-                <p>Create an account.</p>
-              </Link>
-              {/* <Link href="/dashboard" className={styles.card}>
+              <Link href="/dashboard" className={styles.card}>
                 <h2>Dashboard &rarr;</h2>
                 <p>This page is only visible if you are logged in.</p>
               </Link>
@@ -82,7 +72,7 @@ export default function Home(props) {
                 <p>Create an account.</p>
               </Link>
             </>
-          )} */}
+          )}
         </div>
       </main>
 
