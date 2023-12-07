@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt'
 import User from './models/user'
-import dbConnect from './util/index'
+import dbConnect from './util'
 
 export async function login(username, password) {
   if (!(username && password))
