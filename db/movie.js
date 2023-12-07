@@ -1,6 +1,5 @@
 import Movie from './models/movie'
 import User from './models/user'
-import {normalizeId} from './util/index'
 import {dbConnect} from './connection'
 
 export async function getAll(userId){
