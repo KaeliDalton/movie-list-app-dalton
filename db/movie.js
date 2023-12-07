@@ -7,7 +7,7 @@ export async function getAll(userId){
     await dbConnect()
     const user = await User.findById(userId).lean()
     if (!user) return null
-    return user.favoriteMovies.map(movie => normalizeId(movie))
+    return user.favoriteMovies.map(movie => movie.id)
 }
 
 export async function addMovie(userId, movie){
@@ -41,7 +41,7 @@ export async function getUnWatched(userId, isWatched){
     const user = await User.findById(userId).lean()
     if (!user) return null
     const movie = user.favoriteMovies.find(me => me.isWatched === isWatched)
-    if (movie) return normalizeId(movie)
+    if (movie) return 200
     return null
 }
 
@@ -50,7 +50,7 @@ export async function getWatched(userId, isWatched){
     const user = await User.findById(userId).lean()
     if (!user) return null
     const movie = user.favoriteMovies.find(me => me.isWatched === true)
-    if (movie) return normalizeId(movie)
+    if (movie) return 200
     return null
 }
 
