@@ -7,52 +7,29 @@ import sessionOptions from "../config/session";
 import styles from "../styles/Home.module.css";
 import Header from "../components/header";
 import useLogout from "../hooks/useLogout";
-import { useState } from "react";
-import MovieList from "../components/movieList";
-import * as actions from '../context/movie/actions'
-import { useMovieContext } from "../context/movie";
-import { useRef } from "react";
-import { getMovie } from "../util/movie";
 
 
-export async function getServerSideProps({query}) {
-  const props = {}
-  if (query.q){
-    props.movie = await getMovie(query.q)
-  }
-  return { props }
-}
+export const getServerSideProps = withIronSessionSsr(
+  async function getServerSideProps({ req }) {
+    const user = req.session.user;
+    const props = {};
+    // console.log(req.session)
+    if (user) {
+      props.user = req.session.user;
+      props.isLoggedIn = true;
+    } else {
+      props.isLoggedIn = false;
+    }
+    return {props}
+  },
+  sessionOptions
+);
 
 
-export default function Search({movie}) {
-  // const [search, setSearch] = useState()
-  const [query, setQuery] = useState("")
+
+export default function Home(props) {
   const logout = useLogout()
   const router = useRouter()
-  // const [{movieSearchResults}, dispatch] = useMovieContext()
-  // const [fetching, setFetching] = useState(false)
-  // const [previousQuery, setPreviousQuery] = useState()
-  // const inputRef = useRef()
-  // const inputDivRef = useRef()
-  async function handleSubmit(e) {
-    e.preventDefault()
-   if (!query.trim()) return
-   const queryString = `?q=${query}`
-    router.replace(`${router.pathname}${queryString}`)
-  }
-//   async function addToList(){
-//     const {Title, Year, Rated, Director, Poster, Plot, imdbID} = search
-//     const movieData = {id: imdbID, title: Title, rated: Rated, year: Year, director: Director, plot: Plot, poster_link: Poster}
-//     console.log("Movie Data: ", movieData)
-//     const res = await fetch(`/api/movie/${movieData.title}`, {
-//         method: 'POST',
-//         body: JSON.stringify(movieData),
-//     })
-//     if (res.status === 200){
-//         router.replace(router.asPath)
-//     }
-// }
-
   return (
     <div className={styles.container}>
       <Head>
@@ -61,50 +38,31 @@ export default function Search({movie}) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {/* <Header isLoggedIn={props.isLoggedIn} username={props?.user?.username} /> */}
+      <Header isLoggedIn={props.isLoggedIn} username={props?.user?.username} />
 
       <main className={styles.main}>
-        {/* <h1 className={styles.title}>
-         {!props.isLoggedIn && "Log in to"} Search a Movie!
-        </h1> */}
-        <h1>Search a Movie</h1>
-        <>
-        <form onSubmit={handleSubmit}>
-          <input type="text" value={query} 
-          onChange={e => setQuery(e.target.value)} />
-          <button type="submit">Submit</button>
-        </form>
-        
-        {
-      movie?.length
-        ? <section className={styles.results}>
-          {
-         movie.map((movie) =>(
-            <MoviePreview key={movie.Title} {...movie} />
-          ))}
-        </section>
-        : <p className={styles.noResults}>No Movies Found!</p>
-      }
-      </>
-        <div>
-        </div>
-
-{/* 
+        <h1 className={styles.title}>
+         Welcome to MovieList!</h1>
+        <h2>A site for film lovers to get information about their favorite movies</h2>
         <div className={styles.grid}>
           {props.isLoggedIn ? (
             <>
+              <Link href="/search" className={styles.card}>
+                <h2>Basic Search &rarr;</h2>
+                <p>Search for movies</p>
+              </Link>
+              <Link href="/specific-movie" className={styles.card}>
+                <h2>Search by Title &rarr;</h2>
+                <p>Search for a specific movie by title.</p>
+              </Link>
+              <Link href="/search-many" className={styles.card}>
+                <h2>Expanded Search &rarr;</h2>
+                <p>Receive all possible movie results</p>
+              </Link>
               <Link href="/dashboard" className={styles.card}>
                 <h2>Dashboard &rarr;</h2>
                 <p>This page is only visible if you are logged in.</p>
               </Link>
-              <div
-                onClick={logout}
-                style={{ cursor: "pointer" }}
-                className={styles.card}
-              >
-                <h2>Logout &rarr;</h2>
-                <p>Click here to log out.</p>
-              </div>
             </>
           ) : (
             <>
@@ -119,7 +77,7 @@ export default function Search({movie}) {
               </Link>
             </>
           )}
-        </div> */}
+        </div>
       </main>
 
       <footer className={styles.footer}>
@@ -136,14 +94,4 @@ export default function Search({movie}) {
       </footer>
     </div>
   );
-}
-
-
-function MoviePreview({ Title, Poster}) {
-  return (
-    <Link href={'/movies/' + Title} className={styles.preview}>
-      <Image src={Poster} width="312" height="231" alt={Title}/>
-      <span>{Title}</span>
-    </Link>
-  )
 }

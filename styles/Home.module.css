@@ -43,6 +43,7 @@
   margin: 0;
   line-height: 1.15;
   font-size: 4rem;
+  padding-bottom: 15px;
 }
 
 .title,
@@ -57,7 +58,7 @@
 }
 
 .code {
-  background: #fafafa;
+  background:#060F21;
   border-radius: 5px;
   padding: 0.75rem;
   font-size: 1.1rem;
@@ -99,8 +100,21 @@
   transition: 0.15s ease;
 }
 .form>button:is(:hover, :focus, :active) {
-  color: #fafafa;
-  background-color: #222;
+  background-color: #8E9EEB;
+  color: #133168;
+}
+
+.actions{
+  background-color: #8EC7DE;
+  color: #133168;
+  font-size: 20px;
+  border-radius: 12px;
+  margin: 10px;
+  padding: 5px;
+}
+.input{
+  border-radius: 12px;
+  font-size: 20px;
 }
 
 .card:is(:hover, :focus, :active) {
@@ -128,10 +142,20 @@
   .grid {
     width: 100%;
     flex-direction: column;
+    justify-content: center;
+    padding-top: 10px;
+  }
+  .card {
+    width: 75%;
+    margin: 10px;
+  }
+  .title{
+    padding: 10px;
+    font-size: 3rem;
   }
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .card,
   .footer {
     border-color: #222;
@@ -142,4 +166,4 @@
   .logo img {
     filter: invert(1);
   }
-}
+} */

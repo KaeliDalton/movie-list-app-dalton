@@ -41,7 +41,7 @@ sessionOptions
 
 const addMovie = async(req, res)=>{
     console.log('Request Body:', req.session.user._doc)
-    console.log(movie)
+
     // const movie = req.body
     try {
         const addedMovie = await db.movie.addMovie(req.session.user._doc._id, movie)

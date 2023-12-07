@@ -7,7 +7,6 @@ import { withIronSessionSsr } from "iron-session/next";
 import sessionOptions from "../config/session";
 import Header from "../components/header";
 import useLogout from "../hooks/useLogout";
-import MovieList from "../components/movieList";
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps({ req }) {
@@ -27,8 +26,7 @@ export const getServerSideProps = withIronSessionSsr(
 export default function Dashboard(props) {
   const router = useRouter();
   const logout = useLogout();
-  // async function getMovieList(){
-  //   const movies = await db.movie.getAll(user.id)
+  
 
   // }
   return (
@@ -43,10 +41,9 @@ export default function Dashboard(props) {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to a Dashboard Page!
+          Welcome to your Dashboard!
         </h1>
-        <MovieList/>
-
+        
         <p className={styles.description}>
           Current Location: <code className={styles.code}>{router.asPath}</code>
           <br />
@@ -60,19 +57,16 @@ export default function Dashboard(props) {
           This page is only visible if you are logged in.
         </p>
 
+        <h2>Your Favorite Movies</h2>
+        <ul>
+            <li>Add Movies to Favorites to see them here!</li>
+        </ul>
+
         <div className={styles.grid}>
           <Link href="/" className={styles.card}>
             <h2>Home &rarr;</h2>
             <p>Return to the homepage.</p>
           </Link>
-          <div
-            onClick={logout}
-            style={{ cursor: "pointer" }}
-            className={styles.card}
-          >
-            <h2>Logout &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </div>
         </div>
       </main>
 
